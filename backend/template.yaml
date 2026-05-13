@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.14
+    Timeout: 3
+
+Resources:
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.login_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      Events:
+        LoginApi:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.register_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      Events:
+        RegisterApi:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+
+  QueryMusicFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.query_music_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      Events:
+        QueryMusicApi:
+          Type: Api
+          Properties:
+            Path: /music/query
+            Method: get
+
+  GetSubscriptionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.get_subscriptions_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+
+      Events:
+        GetSubscriptionsApi:
+          Type: Api
+          Properties:
+            Path: /subscriptions
+            Method: get
+
+  SubscribeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.subscribe_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      Events:
+        SubscribeApi:
+          Type: Api
+          Properties:
+            Path: /subscriptions
+            Method: post
+  UnsubscribeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_backend.api_handlers.unsubscribe_handler
+      CodeUri: .
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      Events:
+        UnsubscribeApi:
+          Type: Api
+          Properties:
+            Path: /subscriptions
+            Method: delete
+
+Outputs:
+  ApiBaseUrl:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub:
+        - "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+        - {}

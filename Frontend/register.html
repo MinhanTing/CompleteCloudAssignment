@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music App - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:      #0d0d0d;
+            --surface: #161616;
+            --border:  #2a2a2a;
+            --accent:  #c8a96e;
+            --accent2: #e8c98e;
+            --text:    #f0ece4;
+            --muted:   #888;
+            --error:   #e05252;
+            --success: #52c97a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image:
+                radial-gradient(ellipse at 80% 50%, rgba(200,169,110,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(200,169,110,0.04) 0%, transparent 50%);
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+        }
+
+        .card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            margin-bottom: 28px;
+            color: var(--text);
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .field input:focus { border-color: var(--accent); }
+        .field input::placeholder { color: #444; }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #0d0d0d;
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:hover { background: var(--accent2); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .msg {
+            font-size: 13px;
+            margin-top: 14px;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .msg.error   { color: var(--error); }
+        .msg.success { color: var(--success); }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="logo">
+            <h1>♪ Melodia</h1>
+            <p>Music Subscription</p>
+        </div>
+
+        <div class="card">
+            <h2>Create account</h2>
+
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+
+            <div class="field">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Your display name">
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" autocomplete="new-password">
+            </div>
+
+            <button class="btn" id="register-btn" onclick="register()">Create Account</button>
+
+            <p class="msg" id="msg"></p>
+        </div>
+
+        <div class="footer-link">
+            Already have an account? <a href="index.html">Sign in</a>
+        </div>
+    </div>
+
+    <script>
+        // ─── CONFIG ──────────────────────────────────────────────────────────────────
+        // Must match the same URL used in index.html and main.html
+        const API = 'https://yi1gcj6o9e.execute-api.us-east-1.amazonaws.com/Prod';
+
+        // ─── REGISTER ────────────────────────────────────────────────────────────────
+        async function register() {
+            const email     = document.getElementById('email').value.trim();
+            const user_name = document.getElementById('username').value.trim();
+            const password  = document.getElementById('password').value.trim();
+            const msgEl     = document.getElementById('msg');
+            const btn       = document.getElementById('register-btn');
+
+            msgEl.textContent = '';
+            msgEl.className   = 'msg';
+
+            if (!email || !user_name || !password) {
+                msgEl.textContent = 'Please fill in all fields.';
+                msgEl.classList.add('error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            try {
+                const res = await fetch(`${API}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Backend expects: email, user_name, password
+                    body: JSON.stringify({ email, user_name, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    msgEl.textContent = 'Account created! Redirecting to login...';
+                    msgEl.classList.add('success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    // Backend returns "The email already exists" message
+                    msgEl.textContent = data.message;
+                    msgEl.classList.add('error');
+                }
+
+            } catch (err) {
+                msgEl.textContent = 'Connection error. Please try again.';
+                msgEl.classList.add('error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') register();
+        });
+    </script>
+</body>
+</html>
